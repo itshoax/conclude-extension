@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusEl.textContent = "Sending to backend for analysis...";
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/analyze", {
+        const response = await fetch("https://conclude-854031402358.europe-west1.run.app/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ video_url: url })

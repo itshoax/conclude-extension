@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Conclude",
+  "version": "1.0",
+  "description": "Summarize and conclude the current YouTube video using GPT.",
+  "permissions": ["tabs", "activeTab"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Conclude this video"
+  }
+}

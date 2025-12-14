@@ -3,6 +3,47 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusEl = document.getElementById("status");
   const resultEl = document.getElementById("result");
 
+  function renderStructuredResult(summary, inShort, conclusion) {
+    const container = document.createElement("div");
+
+    // Summary
+    if (summary && summary.length) {
+      const h = document.createElement("h4");
+      h.textContent = "Summary";
+      container.appendChild(h);
+
+      const ul = document.createElement("ul");
+      summary.forEach(point => {
+        const li = document.createElement("li");
+        li.textContent = point;
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
+
+    // In short
+    if (inShort) {
+      const div = document.createElement("div");
+      div.className = "in-short";
+      div.textContent = "In short: " + inShort;
+      container.appendChild(div);
+    }
+
+    // Conclusion
+    if (conclusion) {
+      const h = document.createElement("h4");
+      h.textContent = "Conclusion";
+      container.appendChild(h);
+
+      const p = document.createElement("p");
+      p.textContent = conclusion;
+      container.appendChild(p);
+    }
+
+    return container;
+  }
+
+
   analyzeBtn.addEventListener("click", async () => {
     statusEl.textContent = "Getting current tab...";
     resultEl.textContent = "";
@@ -45,13 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         statusEl.textContent = "Done ✅";
 
-        // Your FastAPI currently returns: video_id, message, transcript_excerpt, analysis
-        const { analysis, transcript_excerpt } = data;
+        const { summary, in_short, conclusion } = data;
 
-        resultEl.textContent =
-          (analysis || "No analysis returned.") +
-          "\n\n---\n\nTranscript preview:\n" +
-          (transcript_excerpt || "[no preview]");
+        resultEl.innerHTML = "";
+        resultEl.appendChild(
+          renderStructuredResult(summary, in_short, conclusion)
+        );
       } catch (err) {
         console.error(err);
         statusEl.textContent = "Request failed.";

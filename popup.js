@@ -23,10 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // In short
     if (inShort) {
-      const div = document.createElement("div");
-      div.className = "in-short";
-      div.textContent = "In short: " + inShort;
-      container.appendChild(div);
+      const h = document.createElement("h4");
+      h.textContent = "In Short";
+      container.appendChild(h);
+
+      const p = document.createElement("p");
+      p.textContent = inShort;
+      container.appendChild(p);
     }
 
     // Conclusion
@@ -67,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusEl.textContent = "Sending to backend for analysis...";
 
       try {
-        const response = await fetch("https://conclude-854031402358.europe-west1.run.app/analyze", {
+        const response = await fetch("https://conclude-854031402358.europe-west1.run.app/v2/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ video_url: url })

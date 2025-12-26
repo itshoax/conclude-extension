@@ -3,6 +3,50 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusEl = document.getElementById("status");
   const resultEl = document.getElementById("result");
 
+  function renderStructuredResult(summary, inShort, conclusion) {
+    const container = document.createElement("div");
+
+    // Summary
+    if (summary && summary.length) {
+      const h = document.createElement("h4");
+      h.textContent = "Summary";
+      container.appendChild(h);
+
+      const ul = document.createElement("ul");
+      summary.forEach(point => {
+        const li = document.createElement("li");
+        li.textContent = point;
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
+
+    // In short
+    if (inShort) {
+      const h = document.createElement("h4");
+      h.textContent = "In Short";
+      container.appendChild(h);
+
+      const p = document.createElement("p");
+      p.textContent = inShort;
+      container.appendChild(p);
+    }
+
+    // Conclusion
+    if (conclusion) {
+      const h = document.createElement("h4");
+      h.textContent = "Conclusion";
+      container.appendChild(h);
+
+      const p = document.createElement("p");
+      p.textContent = conclusion;
+      container.appendChild(p);
+    }
+
+    return container;
+  }
+
+
   analyzeBtn.addEventListener("click", async () => {
     statusEl.textContent = "Getting current tab...";
     resultEl.textContent = "";
@@ -26,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusEl.textContent = "Sending to backend for analysis...";
 
       try {
-        const response = await fetch("https://conclude-854031402358.europe-west1.run.app/analyze", {
+        const response = await fetch("https://conclude-854031402358.europe-west1.run.app/v2/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ video_url: url })
@@ -45,13 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         statusEl.textContent = "Done ✅";
 
-        // Your FastAPI currently returns: video_id, message, transcript_excerpt, analysis
-        const { analysis, transcript_excerpt } = data;
+        const { summary, in_short, conclusion } = data;
 
-        resultEl.textContent =
-          (analysis || "No analysis returned.") +
-          "\n\n---\n\nTranscript preview:\n" +
-          (transcript_excerpt || "[no preview]");
+        resultEl.innerHTML = "";
+        resultEl.appendChild(
+          renderStructuredResult(summary, in_short, conclusion)
+        );
       } catch (err) {
         console.error(err);
         statusEl.textContent = "Request failed.";

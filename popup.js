@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
       container.appendChild(h);
 
       const ul = document.createElement("ul");
-      summary.forEach(point => {
+      summary.forEach((point) => {
         const li = document.createElement("li");
         li.textContent = point;
         ul.appendChild(li);
@@ -46,6 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return container;
   }
 
+  const fetchFromSession = async (videoUrl) => {
+    try {
+      const response = await chrome.storage.session.get(videoUrl);
+      return response[videoUrl];
+    } catch (error) {
+      return null;
+    }
+  };
 
   analyzeBtn.addEventListener("click", async () => {
     statusEl.textContent = "Getting current tab...";
@@ -70,21 +78,29 @@ document.addEventListener("DOMContentLoaded", () => {
       statusEl.textContent = "Sending to backend for analysis...";
 
       try {
-        const response = await fetch("https://conclude-854031402358.europe-west1.run.app/v2/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ video_url: url })
-        });
+        const sessionResponse = await fetchFromSession(url);
+        let data = null;
+        if (sessionResponse) {
+          data = sessionResponse;
+        } else {
+          const response = await fetch(
+            "https://conclude-854031402358.europe-west1.run.app/v2/analyze",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ video_url: url }),
+            },
+          );
 
-        const data = await response.json();
+          data = await response.json();
+          chrome.storage.session.set({ [url]: data });
 
-        if (!response.ok) {
-          statusEl.textContent = "Backend error.";
-          resultEl.textContent =
-            data.detail ||
-            data.error ||
-            JSON.stringify(data, null, 2);
-          return;
+          if (!response.ok) {
+            statusEl.textContent = "Backend error.";
+            resultEl.textContent =
+              data.detail || data.error || JSON.stringify(data, null, 2);
+            return;
+          }
         }
 
         statusEl.textContent = "Done ✅";
@@ -93,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         resultEl.innerHTML = "";
         resultEl.appendChild(
-          renderStructuredResult(summary, in_short, conclusion)
+          renderStructuredResult(summary, in_short, conclusion),
         );
       } catch (err) {
         console.error(err);

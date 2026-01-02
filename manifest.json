@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "TL;DW for YouTube – Video Summarizer",
+  "name": "YouTube Conclude – Youtube Video Summary",
   "version": "2.1.0",
   "description": "Summarize and conclude the current YouTube video using GPT.",
   "permissions": ["tabs", "activeTab", "storage"],
